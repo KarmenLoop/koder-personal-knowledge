@@ -1,0 +1,6 @@
+interface:
+  display_name: "Koder Personal Knowledge"
+  short_description: "Build local memory from conversations and reference files."
+  default_prompt: "Use $koder-personal-knowledge to maintain my local knowledge base and answer questions using relevant memories and source files."
+policy:
+  allow_implicit_invocation: true

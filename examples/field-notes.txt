@@ -1,0 +1,6 @@
+Synthetic reference notes
+
+A delivery window is the agreed period in which a shipment should arrive.
+Lead time is the time between placing an order and receiving the goods.
+
+These notes are fictional examples for the local knowledge walkthrough.

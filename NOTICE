@@ -1,0 +1,13 @@
+Koder Personal Knowledge
+Copyright (c) 2026 KarmenLoop and contributors
+Licensed under the MIT License. See LICENSE.
+
+The runtime uses Python's standard library, including its sqlite3 interface.
+Python and SQLite remain subject to their respective upstream terms.
+
+No third-party agent framework, model weights, messaging SDK, OCR engine,
+or document parser is bundled in this repository. Example and test data are
+synthetic. Unicode fixtures exercise multilingual retrieval and do not
+represent real people or messages.
+
+The release package contains no user databases or managed document originals.

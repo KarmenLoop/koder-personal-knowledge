@@ -1,0 +1,14 @@
+{
+  "category": "habits",
+  "title": "Answer style",
+  "body": "The user prefers a short summary before implementation details.",
+  "kind": "fact",
+  "source": {
+    "channel": "terminal",
+    "ref": "synthetic:walkthrough:message-001",
+    "speaker": "local-owner",
+    "observed_at": "2026-10-19T00:00:00Z"
+  },
+  "tags": ["communication", "writing"],
+  "event_id": "synthetic:walkthrough:message-001:answer-style"
+}
