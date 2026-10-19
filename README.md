@@ -1,8 +1,8 @@
 # Koder Personal Knowledge
 
-**Give your agent a knowledge base that grows with you. Keep it on your computer.**
+Koder Personal Knowledge keeps an agent's notes and reference files in a local library. The agent can look up a preference, find a source document, or correct an old fact without loading every past conversation.
 
-Remember preferences, organize reference files, and bring useful context into the next conversation. Built by [KarmenLoop](https://github.com/KarmenLoop) for Koder, with a portable skill and a small Python tool that other host agents can use.
+Built by [KarmenLoop](https://github.com/KarmenLoop) for Koder. The package includes a portable skill and a small Python tool that other agent hosts can use.
 
 ![Python 3.9 or later](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![MIT license](https://img.shields.io/badge/License-MIT-2D7D46)
@@ -12,11 +12,9 @@ Remember preferences, organize reference files, and bring useful context into th
 
 ## Overview
 
-Useful context builds over time: how you like to work, what your team calls things, which tools you use, and where the source document lives. Koder Personal Knowledge gives a host agent a practical way to keep that context between conversations.
+The library stores small records with their sources, plus copies of files you choose to add. Search returns a few relevant excerpts. You can browse the records, correct them, archive a file, or ask the agent to forget something.
 
-The agent saves small, source-backed records as you talk. When a related question comes up, it searches the knowledge base and brings back a few relevant excerpts. You can inspect the records, correct a fact, archive a file, or ask the agent to forget something.
-
-One computer can serve as the knowledge host for several connected channels. If your host agent already handles WeChat, WeCom, or Feishu/Lark, those conversations can use the same verified knowledge space. The host handles account binding and message delivery; this project provides the local memory and reference library.
+Several channels can use one library on the same computer if the host already supports them. For example, a host with WeChat or Feishu/Lark connections can give those conversations access to a verified space. The host handles account binding and message delivery; this project handles the notes and reference library.
 
 The storage tool makes no network requests. A host agent may send retrieved excerpts to its configured model provider. Read [Privacy and data handling](docs/privacy.md) before connecting a hosted model or a shared channel.
 
