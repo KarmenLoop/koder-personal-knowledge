@@ -308,6 +308,14 @@ class Knowledge:
             rows = db.execute('SELECT * FROM entries WHERE ' + condition + ' ORDER BY created_at,id LIMIT ? OFFSET ?', (space, limit, offset)).fetchall()
             return {'total': total, 'items': [self._decode(row) for row in rows], 'next_offset': offset + limit if offset + limit < total else None}
 
+    def stats(self, principal, space='personal'):
+        with self._db() as db:
+            self._permit(db, principal, space)
+            statuses = {row[0]: row[1] for row in db.execute('SELECT status,count(*) FROM entries WHERE space=? GROUP BY status', (space,))}
+            categories = {row[0]: row[1] for row in db.execute('SELECT category,count(*) FROM entries WHERE space=? GROUP BY category', (space,))}
+            attachments = db.execute('SELECT count(*) FROM entries WHERE space=? AND attachment IS NOT NULL', (space,)).fetchone()[0]
+            return {'space': space, 'records': sum(statuses.values()), 'by_status': statuses, 'by_category': categories, 'attachments': attachments}
+
     def search(self, query, principal, space='personal', limit=8, max_chars=6000, include_unconfirmed=False):
         query = clean_text(query, 800)
         if not 1 <= limit <= 30 or not 600 <= max_chars <= 24000:
@@ -511,6 +519,7 @@ def cli():
     imp = sub.add_parser('import-file'); imp.add_argument('--file', required=True); imp.add_argument('--source', required=True, help='Source JSON file, or - for standard input'); imp.add_argument('--extracted-text'); imp.add_argument('--event-id'); imp.add_argument('--title')
     forget = sub.add_parser('forget'); forget.add_argument('id')
     sub.add_parser('render')
+    sub.add_parser('stats', help='Count records by status and category in the permitted space')
     space = sub.add_parser('create-space'); space.add_argument('id'); space.add_argument('--title', required=True)
     grant = sub.add_parser('grant'); grant.add_argument('--member', required=True); grant.add_argument('--role', choices=['reader', 'writer', 'revoke'], required=True)
     args = parser.parse_args()
@@ -530,6 +539,8 @@ def cli():
         return store.get(args.id, args.principal, args.offset, args.max_chars)
     if args.command == 'list':
         return store.list_entries(args.principal, args.space, args.offset, args.limit)
+    if args.command == 'stats':
+        return store.stats(args.principal, args.space)
     if args.command == 'import-file':
         return store.import_file(args.file, args.principal, args.space, load_json(args.source), args.extracted_text, args.event_id, args.title)
     if args.command == 'forget':

@@ -167,3 +167,7 @@ SQLite is authoritative. HTML/JSON/Markdown views can be stale or inconsistent a
 | `3` | Local filesystem/database error. | Check permissions, available space, or file locks. |
 
 Common state errors include `NOT_INITIALIZED`, `OWNER_MISMATCH`, `EVENT_CONFLICT`, `EVENT_FORGOTTEN`, and `ACCESS_DENIED`. Writes have an eight-second lock wait. The tool never escalates OS privileges or silently switches storage locations.
+
+## Library statistics
+
+`--root ROOT --principal VERIFIED_ID --space SPACE_ID stats` returns record counts by category and status, plus the number of records with attachments. It reads only the permitted space and returns no record bodies.
