@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add permission-scoped library statistics without returning note content.
+- Run the local suite automatically on Linux, macOS, and Windows.
+
 ## 1.0.0 — 2026-10-19
 
 Initial release.

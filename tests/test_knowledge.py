@@ -237,6 +237,24 @@ class KnowledgeTests(unittest.TestCase):
             offset = page['next_offset']
         self.assertEqual(''.join(chunks), body)
 
+    def test_stats_summarize_status_without_returning_record_text(self):
+        old = self.put(body='old synthetic note')
+        self.put(body='current synthetic note', supersedes=old['id'])
+        self.put(kind='inference', body='unconfirmed synthetic note')
+        stats = self.store.stats('owner-1')
+        self.assertEqual(stats['records'], 3)
+        self.assertEqual(stats['by_status'], {'active': 1, 'superseded': 1, 'unconfirmed': 1})
+        self.assertEqual(stats['by_category'], {'profile': 3})
+        self.assertNotIn('synthetic note', json.dumps(stats))
+
+    def test_stats_use_the_same_space_permissions_as_retrieval(self):
+        self.put()
+        self.store.create_space('owner-1', 'private-work', 'Private work')
+        self.store.grant('owner-1', 'personal', 'group:one', 'reader')
+        self.assertEqual(self.store.stats('group:one')['records'], 1)
+        with self.assertRaisesRegex(self.k.KnowledgeError, 'ACCESS_DENIED'):
+            self.store.stats('group:one', 'private-work')
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

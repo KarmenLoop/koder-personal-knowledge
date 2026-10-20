@@ -132,6 +132,16 @@ python $Script --root .\demo-knowledge --principal local-owner render
 
 For defaults, correction examples, group sharing, and error handling, see the [command reference](koder-personal-knowledge/references/commands.md).
 
+### Inspect a library
+
+Count the records you can access without returning note contents:
+
+```sh
+python3 koder-personal-knowledge/scripts/knowledge.py --root ./demo-knowledge --principal local-owner stats
+```
+
+The result groups records by category and status and counts attachment records. Add `--space SPACE_ID` before `stats` to inspect a shared space. The same identity and space permissions used for retrieval apply to these counts.
+
 ### Default storage locations
 
 | Platform | Default root |
@@ -184,7 +194,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for changes, tests, and review expectatio
 
 ## Project status
 
-The local storage and retrieval tool is implemented. The local suite passes 25 tests on macOS, including concurrent subprocess writes. The English release also has an end-to-end walkthrough; results and limits are recorded in [validation notes](docs/validation.md).
+The local storage and retrieval tool is implemented. The local suite passes 27 tests on macOS, including concurrent subprocess writes. The English release also has an end-to-end walkthrough; results and limits are recorded in [validation notes](docs/validation.md).
 
 Native Windows and Linux behavior, live channel round trips, automatic host invocation, and external PDF/Office/OCR extraction require their own validation. There is no cloud synchronization layer or multi-computer write protocol in this release.
 
