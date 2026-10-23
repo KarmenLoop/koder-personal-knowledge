@@ -1,5 +1,7 @@
 # Koder Personal Knowledge
 
+English | [简体中文](README.zh-CN.md)
+
 Koder Personal Knowledge keeps an agent's notes and reference files in a local library. The agent can look up a preference, find a source document, or correct an old fact without loading every past conversation.
 
 Built by [KarmenLoop](https://github.com/KarmenLoop) for Koder. The package includes a portable skill and a small Python tool that other agent hosts can use.
