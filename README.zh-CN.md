@@ -1,158 +1,171 @@
 # Koder Personal Knowledge
 
-[English](README.md) | 简体中文
+[English](README.md) | 简体中文 · **v1.0.0**
 
-把智能体的笔记与参考文件放进本地资料库：查找偏好、定位原文或更正旧事实，无须把所有历史对话塞进模型上下文。
+![Python 3.9 or later](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
+![MIT license](https://img.shields.io/badge/License-MIT-2D7D46)
+![Storage: local SQLite](https://img.shields.io/badge/Storage-Local%20SQLite-59636E)
 
-项目由 [KarmenLoop](https://github.com/KarmenLoop) 为 Koder 开发，包含可移植技能和一个小型 Python 工具，其他宿主也可接入。[下载](https://github.com/KarmenLoop/koder-personal-knowledge/releases) · [许可](LICENSE) · [支持（英文）](SUPPORT.md)
+**把智能体的笔记与参考文件放进本地资料库：查找偏好、定位原文或更正旧事实，无须把所有历史对话塞进模型上下文。**
 
-## 资料如何保存
+由 [KarmenLoop](https://github.com/KarmenLoop) 为 [Koder](https://karmenloop.com) 开发，包含可移植技能和一个小型 Python 工具，其他宿主也可接入。存储工具**不发网络请求**；宿主仍可能把检索摘录发给自己配置的模型。
 
-库里保存带来源的小记录，以及用户主动加入的文件副本。搜索只返回少量相关摘录；可以浏览、更正、归档或删除。宿主若已连接多个消息渠道，可让它们在同一台电脑访问已验证空间，但账号绑定和消息投递由宿主负责。
+[下载](https://github.com/KarmenLoop/koder-personal-knowledge/releases) · [中文教程](docs/tutorial.zh-CN.md) · [English tutorial](docs/tutorial.en.md) · [许可](LICENSE) · [支持](SUPPORT.md)
 
-存储工具不发网络请求。宿主可能把检索内容发给自己配置的模型，请先阅读[隐私与数据处理（英文）](docs/privacy.md)。
+---
+
+## 为什么做这个
+
+长对话会埋掉偏好、模糊来源。智能体要么忘掉长期事实，要么把整段历史塞进模型窗口。Personal Knowledge 用**可检查的本地记录**保存来源、做有限检索、带历史的更正，以及可选的共享空间——同时不声称云同步或内置消息登录。
+
+---
+
+## 一览
+
+| | |
+| --- | --- |
+| **安装内容** | 完整 `koder-personal-knowledge/` 技能目录 + 随包 `knowledge.py` |
+| **版本** | **1.0.0**（`VERSION`） |
+| **运行时** | Python **3.9+** 与标准 `sqlite3`；无第三方包 |
+| **存储** | 本地 SQLite + 受管文件副本 + 离线 HTML/Markdown/JSON 视图 |
+| **工具网络** | 存储脚本：**无** |
+| **许可** | [MIT](LICENSE) |
+| **本版不含** | 云同步、多电脑写入协议、内置 PDF/OCR、微信/飞书登录适配器 |
+
+---
+
+## 是 / 不是
+
+| 是 | 不是 |
+| --- | --- |
+| 面向智能体的本地个人知识库 | 托管聊天机器人或模型微调 |
+| 对笔记与所选文件的有限检索 | 每次把整个库塞进提示 |
+| 带被替代历史的更正；带墓碑的遗忘 | 对 SSD 或云厂商日志的物理安全擦除 |
+| 经宿主、面向已验证身份的共享空间 | 用各应用显示名直接当身份 |
+| 离线 HTML / Markdown / JSON 检查 | 面向公开传播的完整导出 |
+| 可移植技能 + 标准库 Python 工具 | 桌面安装器、渠道登录服务或向量搜索 |
+
+---
 
 ## 功能
 
 | 能力 | 行为 |
 | --- | --- |
-| 日常记录 | 保存明确、长期有用的偏好与事实，无需先完成长问卷 |
-| 个人上下文 | 分类保存资料、习惯、关系、工具、工作、行业和生活内容 |
+| 日常记录 | 保存明确、长期有用的偏好与事实，无需先填长问卷 |
+| 个人上下文 | 资料、习惯、关系、工具、工作、行业、生活 |
 | 参考文件 | 管理所选文件副本，保留原名、来源与 SHA-256 |
-| 有限检索 | 返回本地文本的限定摘录，不默认发送整个库 |
+| 有限检索 | 返回限定摘录，不默认发送整个库 |
 | 事实与推断 | 行为推断在用户确认前保持未确认 |
-| 更正历史 | 新事实替代旧记录，同时保留来源与被替代状态 |
-| 可检查视图 | 本地 HTML、逐条 Markdown 与完整 JSON 目录 |
+| 更正历史 | 新事实替代旧记录，保留来源与被替代状态 |
+| 可检查视图 | 本地 HTML、逐条 Markdown、完整 JSON 目录 |
 | 共享空间 | 所有者向已验证用户或群组授予读取或贡献权限 |
-| 本地写入 | SQLite 事务、原子替换、事件去重与有界锁等待 |
-| 遗忘 | 删除记录与不再引用的文件，刷新视图并拦截已删事件重试 |
+| 本地写入 | SQLite 事务、原子替换、事件去重、有界锁等待 |
+| 遗忘 | 删除记录与不再引用的文件，拦截已删事件重试 |
 
-八类分别是个人资料、习惯偏好、人物关系、工具、工作职业、行业知识、日常生活、参考资料。空库即可使用，无须先“填满”。
+八类合一库：个人资料、习惯偏好、人物关系、工具、工作职业、行业知识、日常生活、参考资料。空库即可使用。
 
-## 宿主与身份边界
+---
 
-每条记录保留来源、可用的说话者信息、时间与状态。宿主决定对话属于哪个身份和空间，同名账号不能直接合并。
+## 快速开始
 
-技能规定何时检索与保存，自动触发取决于宿主的技能选择和消息流程。导入 Markdown 不会创建后台进程或登录消息账号。
-
-## 下载与安装
-
-从[发行页](https://github.com/KarmenLoop/koder-personal-knowledge/releases)取得完整技能 ZIP；要源码和测试，可选择 **Code → Download ZIP** 或：
+要求 **Python 3.9+**。从[发行页](https://github.com/KarmenLoop/koder-personal-knowledge/releases)取得完整技能 ZIP，或：
 
 ```sh
 git clone https://github.com/KarmenLoop/koder-personal-knowledge.git
 cd koder-personal-knowledge
 ```
 
-保持整个 `koder-personal-knowledge/` 技能目录完整，其中的脚本和参考文档都需要保留。
-
-1. 用宿主安装器导入完整目录，或放到宿主配置的技能目录。
-2. 通过受控的本地工具提供随包 Python 脚本。
-3. 每次调用由宿主提供固定库根目录、已验证身份和空间。
-4. 启用宿主技能选择；若需每轮学习，还要在消息流程接入检索和保存。
-
-运行时只需 Python 标准库，不包含桌面安装器、模型包或消息账号登录服务。
-
-## 第一次保存与检索
-
-要求 **Python 3.9+** 及其标准 `sqlite3`。在仓库根目录运行，Windows 可用 `python` 替换 `python3`。例子使用隔离目录和合成所有者 `local-owner`；生产宿主应提供稳定、已验证的真实身份。
+保持整个 `koder-personal-knowledge/` 目录完整。示例（隔离演示目录；生产请用已验证的真实身份）：
 
 ```sh
-# Inspect the platform's default location without creating anything.
 python3 koder-personal-knowledge/scripts/knowledge.py path
-
-# Create a separate library for this walkthrough.
 python3 koder-personal-knowledge/scripts/knowledge.py \
   --root ./demo-knowledge init --owner local-owner
-
-# Save an example preference with its source.
 python3 koder-personal-knowledge/scripts/knowledge.py \
   --root ./demo-knowledge --principal local-owner \
   remember --record examples/preference.json
-
-# Retrieve the preference within a small response budget.
 python3 koder-personal-knowledge/scripts/knowledge.py \
   --root ./demo-knowledge --principal local-owner \
   search "summary" --max-chars 2000
-
-# Archive a selected text file and its contents.
 python3 koder-personal-knowledge/scripts/knowledge.py \
   --root ./demo-knowledge --principal local-owner \
   import-file --file examples/field-notes.txt --source examples/file-source.json
-
-# Rebuild the local views and print their location.
 python3 koder-personal-knowledge/scripts/knowledge.py \
   --root ./demo-knowledge --principal local-owner render
 ```
 
-浏览器打开 `demo-knowledge/views/index.html`。它离线可用，但包含完整库，应留在所有者电脑上。
-
-PowerShell 使用单行命令：
-
-```powershell
-$Script = ".\koder-personal-knowledge\scripts\knowledge.py"
-python $Script --root .\demo-knowledge init --owner local-owner
-python $Script --root .\demo-knowledge --principal local-owner remember --record .\examples\preference.json
-python $Script --root .\demo-knowledge --principal local-owner search "summary" --max-chars 2000
-python $Script --root .\demo-knowledge --principal local-owner import-file --file .\examples\field-notes.txt --source .\examples\file-source.json
-python $Script --root .\demo-knowledge --principal local-owner render
-```
-
-更正、共享、默认值与错误处理见[命令参考（英文）](koder-personal-knowledge/references/commands.md)。
-
-### 查看规模
-
-只统计可访问记录，不返回笔记正文：
-
-```sh
-python3 koder-personal-knowledge/scripts/knowledge.py --root ./demo-knowledge --principal local-owner stats
-```
-
-结果按类别与状态分组，并统计附件。`stats` 前加 `--space SPACE_ID` 查看共享空间，仍按相同身份和空间权限限制。
+浏览器打开 `demo-knowledge/views/index.html`（离线可用，含完整库，应留在所有者电脑）。安装、宿主接入、渠道、升级与卸载见[中文教程](docs/tutorial.zh-CN.md)。
 
 ### 默认位置
 
 | 系统 | 默认根目录 |
 | --- | --- |
-| 有 D: 盘的 Windows | `D:\KoderKnowledge` |
-| 无 D: 的 Windows | C: 用户资料目录内的 `KoderKnowledge`；资料目录重定向时为 `C:\Users\<username>\KoderKnowledge` |
-| macOS/Linux | `~/KoderKnowledge` |
+| 有 D: 的 Windows | `D:\KoderKnowledge` |
+| 无 D: 的 Windows | 用户资料目录内 `KoderKnowledge`（重定向时为 `C:\Users\<username>\KoderKnowledge`） |
+| macOS / Linux | `~/KoderKnowledge` |
 
-`--root` 或 `KODER_KNOWLEDGE_ROOT` 可指定其他位置。初始化后宿主应保存绝对路径；切换路径不迁移旧库，D: 不可写会报错而不偷偷另建库。
+`--root` 或 `KODER_KNOWLEDGE_ROOT` 可改路径；换路径不迁移旧库。
 
-## 渠道与群组
+---
 
-一个运行中的宿主可以让多个已连接应用访问同一个本地库。宿主必须认证入站消息，将已关联账号映射到验证身份；所有者可共享空间给已验证的群组身份，其他私人空间保持独立。
+## 渠道与文件（简述）
 
-`reader` 可检索，`writer` 还可新增记录和导入文件。只有所有者能改授权、删除、替代事实或渲染完整库。知识访问不授予执行任务或给新收件人发文件的权限。
+运行中的宿主可让多个已连接应用访问同一本地库。宿主须认证入站消息并将已关联账号映射到验证身份。`reader` 可检索，`writer` 可新增与导入；仅所有者能改授权、删除、替代事实或渲染完整库。知识访问不授予执行电脑任务或给新收件人发文件的权限。
 
-[宿主接入契约（英文）](koder-personal-knowledge/references/host-integration.md)列出输入与检查。本项目没有微信、企业微信或飞书登录适配器，远程请求还要求电脑和宿主运行且可达。
+UTF-8 / GB18030 文字可直接索引。PDF、Office、图片可归档，可搜索文本需宿主解析或 OCR。`attachment_only` 表示只存了原文件。默认每文件 32 MiB、每条 256K 字符。检索用关键词与中文片段——**不含向量搜索**。
 
-## 文件与搜索
+连接托管模型或共享渠道前请读[隐私说明](docs/privacy.md)（英文正文；教程含中文要点）。
 
-UTF-8、GB18030 文字可直接索引，含 Markdown、CSV、JSON、日志、YAML、XML、HTML。原文件以不执行的 `.bin` 保存，原名保留在元数据和下载链接中。
+---
 
-PDF、Office、图片等可归档，但可搜索文本需由宿主解析或 OCR 提供。`attachment_only` 表示只存了原文件，不代表正文可检索。默认每个原文件 32 MiB、每条记录 256K 字符，较大材料需拆分或由宿主管理。检索使用关键词与中文片段，不含向量搜索。
+## 文档
 
-## 文档与验证
+| 文档 | 用途 |
+| --- | --- |
+| [中文教程](docs/tutorial.zh-CN.md) · [English](docs/tutorial.en.md) | 下载、第一次保存/检索、排查、升级、卸载 |
+| [技能规则](koder-personal-knowledge/SKILL.md) · [命令参考](koder-personal-knowledge/references/commands.md) · [宿主接入](koder-personal-knowledge/references/host-integration.md) | 技能与工具 |
+| [架构](docs/architecture.md) · [隐私](docs/privacy.md) · [FAQ](docs/faq.md) · [验证](docs/validation.md) | 边界与证据 |
 
-- [技能规则](koder-personal-knowledge/SKILL.md) · [命令参考](koder-personal-knowledge/references/commands.md) · [宿主接入](koder-personal-knowledge/references/host-integration.md)
-- [架构](docs/architecture.md) · [隐私](docs/privacy.md) · [常见问题](docs/faq.md) · [验证](docs/validation.md)
+技术参考目前以英文为主；中文产品、练习路径与限制以本页和中文教程为准。
 
-以上技术参考保留英文原文。完整中文入门流程见本页，英文对应流程见[英文首页](README.md)。
+---
+
+## 项目状态
+
+本地存储与检索已实现。本地套件在 **macOS 上 27 项测试通过**（含并发子进程写入），见[验证](docs/validation.md)。Windows/Linux 原生、真实渠道往返、自动宿主触发、外部 PDF/Office/OCR 需另行验收。本版**没有**云同步层或多电脑写入协议。
 
 ```sh
 python3 -B -m unittest discover -s tests -v
 ```
 
-测试使用临时目录和合成数据，包含多语种检索；不会打开个人库、连接消息账号或调用付费 API。现有记录为 macOS 27 项本地测试通过，含并发子进程写入，不能据此声称 Windows/Linux 原生或托管 CI 已验收。真实渠道、自动宿主触发、PDF/Office/OCR、云同步和多电脑写入协议需分别验证，本版没有后两种同步层。
+---
 
-## 更新、回退与移除
+## 常见问题
 
-更新前保留库的完整备份，并核对 [CHANGELOG.md](CHANGELOG.md) 与对应版本说明；不要只复制运行中的 SQLite 主文件。升级或回退先在副本验证，改变 `--root` 不能代替迁移。移除技能不会自动删除外部知识库；需要遗忘内容时由所有者使用命令参考中的删除流程，再核对生成视图和保留的备份。
+### 这是聊天机器人或模型吗？
 
-## 贡献、许可与归属
+不是。这是可移植技能加本地知识工具；模型、界面、身份与消息连接由宿主提供。
 
-贡献见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)，求助见 [SUPPORT.md](SUPPORT.md)，敏感报告见 [SECURITY.md](SECURITY.md)。私人资料和凭据不要提交到公开问题。
+### 会改模型权重吗？
 
-采用 [MIT](LICENSE)，可按原条款使用、修改、再分发与商业使用，保留 [NOTICE](NOTICE)。项目依赖 Python 标准库及 SQLite，沿用完整 `SKILL.md` 目录模式，知识库与宿主身份/执行系统分开。例子中的人物、事件、消息和文件均为合成数据。
+不会。这里的「学习」指可检查记录与事后检索。
+
+### 手机能用电脑上的知识吗？
+
+在宿主**正在运行**且渠道适配器已接通时可以。本仓库本身不提供远程访问或应用登录。
+
+### 多台电脑同步吗？
+
+本版没有。不要用普通云盘同步正在多机写入的 SQLite。
+
+### 软可发现性
+
+与仓库实质相符的检索表述：**智能体本地个人知识库**、**SQLite 笔记与参考资料库**、**有限检索替代整段聊天历史**、**带来源的可更正记忆**、**已验证身份的共享知识空间**。避免堆砌关键词。
+
+---
+
+## 许可与联系
+
+[MIT](LICENSE)，保留 [NOTICE](NOTICE)。例子与测试中的人物、事件、消息和文件均为合成数据。
+
+[GitHub Issues](https://github.com/KarmenLoop/koder-personal-knowledge/issues) · [SUPPORT.md](SUPPORT.md) · [SECURITY.md](SECURITY.md)。私人资料和凭据不要提交到公开问题。
